@@ -1,0 +1,6 @@
+node_modules/
+tmp-n8n-db/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+.DS_Store
