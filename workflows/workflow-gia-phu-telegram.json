@@ -36,7 +36,7 @@
           },
           "conditions": [
             {
-              "leftValue": "={{ Number($json.message?.chat?.id ?? $json.callback_query?.message?.chat?.id) === -1004312722594 && Number($json.message?.message_thread_id ?? $json.callback_query?.message?.message_thread_id) === 23 }}",
+              "leftValue": "={{ (() => { const chatId = Number($json.message?.chat?.id ?? $json.callback_query?.message?.chat?.id); const threadId = Number($json.message?.message_thread_id ?? $json.callback_query?.message?.message_thread_id); const allowedTopics = [ { chatId: -1004312722594, threadId: 23 }, { chatId: -1004312722594, threadId: 24 }, { chatId: -1003954561827, threadId: 5 } ]; return allowedTopics.some((item) => item.chatId === chatId && item.threadId === threadId); })() }}",
               "rightValue": true,
               "operator": {
                 "type": "boolean",
