@@ -27,21 +27,6 @@
     },
     {
       "parameters": {
-        "mode": "runOnceForEachItem",
-        "language": "javaScript",
-        "jsCode": "// Update only these two values when you want to change the allowed group/topic.\nconst allowedChatId = -1004312722594;\nconst allowedThreadId = 23;\n\nconst currentChatId = Number($json.message?.chat?.id ?? $json.callback_query?.message?.chat?.id ?? 0);\nconst currentThreadId = Number($json.message?.message_thread_id ?? $json.callback_query?.message?.message_thread_id ?? 0);\n\nreturn {\n  json: {\n    ...$json,\n    currentChatId,\n    currentThreadId,\n    allowedChatId,\n    allowedThreadId,\n  },\n};"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -3360,
-        -1840
-      ],
-      "id": "7a2fbf3f-8e50-4ab3-ae0e-3efc6ad8f9d1",
-      "name": "Scope Config"
-    },
-    {
-      "parameters": {
         "conditions": {
           "options": {
             "caseSensitive": false,
@@ -51,22 +36,13 @@
           },
           "conditions": [
             {
-              "leftValue": "={{ Number($json.currentChatId) }}",
-              "rightValue": "={{ Number($json.allowedChatId) }}",
+              "leftValue": "={{ Number($json.message?.chat?.id ?? $json.callback_query?.message?.chat?.id) === -1004312722594 && Number($json.message?.message_thread_id ?? $json.callback_query?.message?.message_thread_id) === 23 }}",
+              "rightValue": true,
               "operator": {
-                "type": "number",
+                "type": "boolean",
                 "operation": "equals"
               },
               "id": "e6c0a1aa-6fb5-4f43-b8c8-8d5e3a98d5d1"
-            },
-            {
-              "leftValue": "={{ Number($json.currentThreadId) }}",
-              "rightValue": "={{ Number($json.allowedThreadId) }}",
-              "operator": {
-                "type": "number",
-                "operation": "equals"
-              },
-              "id": "2c7ef4c5-d9d3-47db-bb4d-2b1e0e84f4d0"
             }
           ],
           "combinator": "and"
@@ -367,17 +343,6 @@
   "pinData": {},
   "connections": {
     "Telegram Trigger": {
-      "main": [
-        [
-          {
-            "node": "Scope Config",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Scope Config": {
       "main": [
         [
           {
