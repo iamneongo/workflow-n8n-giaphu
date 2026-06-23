@@ -27,6 +27,41 @@
     },
     {
       "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ Number($json.message?.chat?.id ?? $json.callback_query?.message?.chat?.id) === -1004312722594 && Number($json.message?.message_thread_id ?? $json.callback_query?.message?.message_thread_id) === 23 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              },
+              "id": "e6c0a1aa-6fb5-4f43-b8c8-8d5e3a98d5d1"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3328,
+        -1840
+      ],
+      "id": "5d5b47c0-9b04-4efb-bf15-2d9a0d447cc8",
+      "name": "Allowed Group Topic"
+    },
+    {
+      "parameters": {
         "resource": "chat",
         "chatId": "=-1003954561827"
       },
@@ -311,11 +346,23 @@
       "main": [
         [
           {
-            "node": "Has Callback",
+            "node": "Allowed Group Topic",
             "type": "main",
             "index": 0
           }
         ]
+      ]
+    },
+    "Allowed Group Topic": {
+      "main": [
+        [
+          {
+            "node": "Has Callback",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
       ]
     },
     "Get a chat": {
