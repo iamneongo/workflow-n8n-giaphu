@@ -1,0 +1,436 @@
+{
+  "name": "Workflow Gia Phú Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -3584,
+        -1840
+      ],
+      "id": "75bae1e2-ae2b-45eb-9670-50604261269b",
+      "name": "Telegram Trigger",
+      "webhookId": "e65e36c0-bd3b-47a9-a2eb-befc083b4a33",
+      "credentials": {
+        "telegramApi": {
+          "id": "YMPFyCqpGYxi4sgz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "chatId": "=-1003954561827"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3040,
+        -1600
+      ],
+      "id": "ce033b04-98b5-4622-b1f1-d7b0088c551f",
+      "name": "Get a chat",
+      "webhookId": "b5312c6e-9fee-4d33-80e7-e2b839048b66",
+      "credentials": {
+        "telegramApi": {
+          "id": "YMPFyCqpGYxi4sgz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=-1004312722594",
+        "text": "={{ $node[\"Telegram Trigger\"].json.message.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Đồng ý",
+                    "additionalFields": {
+                      "callback_data": "={{ \"approve|\" + $node[\"Telegram Trigger\"].json.message.chat.id + \"|\" + $node[\"Telegram Trigger\"].json.message.message_id }}"
+                    }
+                  },
+                  {
+                    "text": "Không đồng ý",
+                    "additionalFields": {
+                      "callback_data": "={{ \"reject|\" + $node[\"Telegram Trigger\"].json.message.chat.id + \"|\" + $node[\"Telegram Trigger\"].json.message.message_id }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "message_thread_id": 23
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2784,
+        -1584
+      ],
+      "id": "d3c0ca13-7938-497e-bfa2-11dc7b2215d7",
+      "name": "Approval Request",
+      "webhookId": "41258947-bbb1-48e7-87cc-06ca4115ec4e",
+      "credentials": {
+        "telegramApi": {
+          "id": "YMPFyCqpGYxi4sgz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $node[\"Telegram Trigger\"].json.callback_query.data.split(\"|\")[0] }}",
+              "rightValue": "approve",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "0b76c416-6923-4b08-a459-75a269281864"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2576,
+        -1968
+      ],
+      "id": "9bfb1a1e-2ae7-41f8-aa01-c8bb9a90a1de",
+      "name": "Approve Decision"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $node[\"Telegram Trigger\"].json.callback_query.message.chat.id }}",
+        "messageId": "={{ $node[\"Telegram Trigger\"].json.callback_query.message.message_id }}",
+        "text": "Đã đồng ý",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2320,
+        -2080
+      ],
+      "id": "24af33f3-83ea-42fc-bd35-895a69f4d1ed",
+      "name": "Approved Response",
+      "webhookId": "885cf630-5f05-4169-9dd1-45d9291c5882",
+      "credentials": {
+        "telegramApi": {
+          "id": "YMPFyCqpGYxi4sgz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $node[\"Telegram Trigger\"].json.callback_query.message.chat.id }}",
+        "messageId": "={{ $node[\"Telegram Trigger\"].json.callback_query.message.message_id }}",
+        "text": "Không đồng ý",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2304,
+        -1760
+      ],
+      "id": "a48c4c5c-a13d-44c7-a4ce-b214ef232e8c",
+      "name": "Rejected Response",
+      "webhookId": "fe95eedf-9fce-4348-870a-54e3b689066c",
+      "credentials": {
+        "telegramApi": {
+          "id": "YMPFyCqpGYxi4sgz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $node[\"Telegram Trigger\"].json.callback_query.id }}",
+        "additionalFields": {
+          "cache_time": 0,
+          "show_alert": false,
+          "text": "?? ghi nh?n"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2784,
+        -1968
+      ],
+      "id": "2c6f02c3-d322-4fb9-9e76-6e1d62640cb1",
+      "name": "Callback Answer",
+      "webhookId": "7c3c0a9a-4d79-45da-9e05-1c98f04d0a1f",
+      "credentials": {
+        "telegramApi": {
+          "id": "YMPFyCqpGYxi4sgz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$node[\"Telegram Trigger\"].json.callback_query }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              },
+              "id": "f51d2973-f03e-40ad-b301-94fa0f98f833"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3328,
+        -1840
+      ],
+      "id": "c1dfdc40-e554-4800-a5b2-a3b3be108d59",
+      "name": "Has Callback"
+    },
+    {
+      "parameters": {
+        "destinationChatId": "-1004312722594",
+        "sourceChatId": "={{ $node[\"Telegram Trigger\"].json.callback_query.data.split(\"|\")[1] }}",
+        "messageId": "={{ $node[\"Telegram Trigger\"].json.callback_query.data.split(\"|\")[2] }}"
+      },
+      "type": "n8n-nodes-forward-bot-telegram.forwardBotTelegram",
+      "typeVersion": 1,
+      "position": [
+        -1920,
+        -2128
+      ],
+      "id": "06ae59c5-9ef4-4d45-9996-98b981040626",
+      "name": "Forward Bot Telegram",
+      "credentials": {
+        "telegramApi": {
+          "id": "YMPFyCqpGYxi4sgz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "chatId": "-1003954561827"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3040,
+        -1968
+      ],
+      "id": "1e9b8778-fbb7-4db3-a5d5-fc089aae3881",
+      "name": "Get a chat1",
+      "webhookId": "bf5629b1-ef95-4a3e-96a6-fd7879402abe",
+      "credentials": {
+        "telegramApi": {
+          "id": "YMPFyCqpGYxi4sgz",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $node[\"Telegram Trigger\"].json.callback_query.data.split(\"|\")[1] }}",
+        "text": "=Đã bị từ chối: {{ $node[\"Telegram Trigger\"].json.callback_query.message.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1968,
+        -1664
+      ],
+      "id": "reject-bot-telegram-node",
+      "name": "Reject Bot Telegram",
+      "webhookId": "reject-bot-telegram-webhook",
+      "credentials": {
+        "telegramApi": {
+          "id": "YMPFyCqpGYxi4sgz",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Has Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a chat": {
+      "main": [
+        [
+          {
+            "node": "Approval Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve Decision": {
+      "main": [
+        [
+          {
+            "node": "Approved Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejected Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approval Request": {
+      "main": [
+        []
+      ]
+    },
+    "Callback Answer": {
+      "main": [
+        [
+          {
+            "node": "Approve Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Callback": {
+      "main": [
+        [
+          {
+            "node": "Get a chat1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved Response": {
+      "main": [
+        [
+          {
+            "node": "Forward Bot Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a chat1": {
+      "main": [
+        [
+          {
+            "node": "Callback Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Forward Bot Telegram": {
+      "main": [
+        []
+      ]
+    },
+    "Rejected Response": {
+      "main": [
+        [
+          {
+            "node": "Reject Bot Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reject Bot Telegram": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
